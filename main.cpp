@@ -4,11 +4,13 @@
 
 #include <iostream>
 #include <fstream>
-#include "bst.h"
+#include "bst.cpp"
+#include "two-three.cpp"
 using namespace std;
 
 int main(int argc, char* argv[]) {
 	int choice;
+	char first_choice;
 	if (argc != 2) {
 	    cout << "Incorrect input. Correct format: ./<exectuable.out> <inputtext.txt>\n";
 	    return 1;
@@ -16,18 +18,23 @@ int main(int argc, char* argv[]) {
 
 	ifstream input(argv[1]);
 	BST myTree;
-
+	TTT tTree;
 	if(input.is_open()){
-            myTree.buildTree(input);
+            //myTree.buildTree(input);
+	    tTree.buildTree(input);
             input.close();
             while(1){
 	        choice = 0;
+		cout << "Options: (a) BST, (b) 2-3 Tree, (c) Compare BST and 2-3 Tree\n";
+		cin >> first_choice;
 	        cout <<"Options: (1) display index, (2) search, (3) save index, (4) quit\n";
 	        cin >> choice;
 
 		//Print index
-	        if(choice == 1)
-	            myTree.printTree(cout);
+	        if(choice == 1 && first_choice == 'b')
+	            tTree.printTree(cout);
+		else if (choice == 1 && first_choice == 'a')
+		    myTree.printTree(cout);
 	       
 		//Search index for a word
 		else if(choice == 2)
