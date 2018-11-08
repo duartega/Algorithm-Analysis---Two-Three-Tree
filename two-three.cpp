@@ -67,7 +67,7 @@ void TTT::buildTree(ifstream & input){
 	<<"Total time spent building index: " << totalTime << endl;
 
 	cout << setw(40) << std::left
-	<<"Height of BST is : " << treeHeight << endl;
+	<<"Height of 2-3 is : " << treeHeight << endl;
  
 }
 
@@ -78,7 +78,8 @@ void TTT::buildTree(ifstream & input){
 void TTT::insertHelper(const string &x, int line, node *& t, int &distWord){
     if(t == NULL)
     {
-	    t = new node(x, NULL, NULL, NULL);
+        //curr, lv, mv, rv, node *l, node * m, node *r
+	    t = new node(x, "","","", NULL, NULL, NULL);
 	    t->lines.push_back(line);
 	    distWord++;
     }
@@ -90,18 +91,44 @@ void TTT::insertHelper(const string &x, int line, node *& t, int &distWord){
     else if (x.compare(t->key) < 0 && t->right != NULL)
         insertHelper(x, line, t->right, distWord);
     
-	else if (x.compare(t->key) > 0 && t->left == NULL){
-        string y = t->key
-        t->left = y; // Move the root to the right
-        t->right = x; // Insert new key to the left value
-        t->key = '0';
+	else if (x.compare(t->lval) > 0 && t->left == NULL){
+        if (t->lval != "" && t->rval != ""){
+            node * r = new node("", x, "","", NULL, NULL, NULL);
+            node * s = new node("", t->lval,"","", NULL, NULL, NULL);
+            t->left = r->middle;
+            t->right = s->middle;
+            t->mval = x;
+            t->lval = "";
+            t->rval = "";
+        }
+        else{
+        t->rval = t->key; // Move the root to the right
+        t->lval = x; // Insert new key to the left value
+        t->key = "";
+        }
+    }
+    	else if (x.compare(t->lval) < 0 && t->left == NULL){
+        if (t->lval != "" && t->rval != ""){
+            node *& r = new node("", x,"","", NULL, NULL, NULL);
+            node *& s = new node("", t->lval,"","", NULL, NULL, NULL);
+            t->left = r->middle;
+            t->right = s->middle;
+            t->mval = t->lval;
+            t->lval = "";
+            t->rval = "";
+        }
+        else{
+        t->rval = t->key; // Move the root to the right
+        t->lval = x; // Insert new key to the left value
+        t->key = "";
+        }
     }
     //insertHelper(x, line, t->right, distWord);
 	else if (x.compare(t->key) == 0)
 	    t->lines.push_back(line);
-	else if (x.compare(t->key) < 0 && t->right == NULL){ // if (x < key) then < 0
-        t->right->key = t->key; // Move the root to the right
-        t->left->key = x; // Insert new key to the left value
+	else if (x.compare(t->rval) < 0 && t->right == NULL){ // if (x < key) then < 0
+        t->lval = t->key; // Move the root to the right
+        t->rval = x; // Insert new key to the left value
         t->key = '0';
     }
     //insertHelper(x, line, t->left, distWord);

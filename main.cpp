@@ -20,8 +20,9 @@ int main(int argc, char* argv[]) {
 	BST myTree;
 	TTT tTree;
 	if(input.is_open()){
-            //myTree.buildTree(input);
 	    tTree.buildTree(input);
+            myTree.buildTree(input);
+
             input.close();
             while(1){
 	        choice = 0;
