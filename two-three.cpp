@@ -78,7 +78,6 @@ void TTT::buildTree(ifstream & input){
 void TTT::insertHelper(const string &x, int line, node *& t, int &distWord){
     if(t == NULL)
     {
-        //curr, lv, mv, rv, node *l, node * m, node *r
 	    t = new node(x, "","","", NULL, NULL, NULL);
 	    t->lines.push_back(line);
 	    distWord++;
@@ -93,11 +92,13 @@ void TTT::insertHelper(const string &x, int line, node *& t, int &distWord){
     
 	else if (x.compare(t->lval) > 0 && t->left == NULL){
         if (t->lval != "" && t->rval != ""){
-            node * r = new node("", x, "","", NULL, NULL, NULL);
-            node * s = new node("", t->lval,"","", NULL, NULL, NULL);
+            node * r = new node("","", x, "", NULL, NULL, NULL);
+            node * l = new node("", "",t->rval, "", NULL, NULL, NULL);
             t->left = r->middle;
-            t->right = s->middle;
-            t->mval = x;
+            r->middle = t->left;
+            t->right = l->middle;
+            l->middle = t->right;
+            t->mval = t->rval;
             t->lval = "";
             t->rval = "";
         }
@@ -109,13 +110,16 @@ void TTT::insertHelper(const string &x, int line, node *& t, int &distWord){
     }
     	else if (x.compare(t->lval) < 0 && t->left == NULL){
         if (t->lval != "" && t->rval != ""){
-            node *& r = new node("", x,"","", NULL, NULL, NULL);
-            node *& s = new node("", t->lval,"","", NULL, NULL, NULL);
+            node * r =  new node("","", t->rval, "", NULL, t->left, NULL);
+            node * l =  new node("", "",x, "", NULL, t->right, NULL);
             t->left = r->middle;
-            t->right = s->middle;
+            r->middle = t->left;
+            t->right = l->middle;
+            l->middle = t->right;
             t->mval = t->lval;
             t->lval = "";
             t->rval = "";
+            // stop here
         }
         else{
         t->rval = t->key; // Move the root to the right
@@ -129,7 +133,7 @@ void TTT::insertHelper(const string &x, int line, node *& t, int &distWord){
 	else if (x.compare(t->rval) < 0 && t->right == NULL){ // if (x < key) then < 0
         t->lval = t->key; // Move the root to the right
         t->rval = x; // Insert new key to the left value
-        t->key = '0';
+        t->key = "";
     }
     //insertHelper(x, line, t->left, distWord);
 			
