@@ -17,14 +17,13 @@ class TTT{
         void buildTree(ifstream & input);
     private:
     struct node{
-        node(const string &x, const string &rv, const string &lv, const string &mv, node *l, node * m, node *r)
-        :key(x), rval(rv), lval(lv), mval(mv), left(l), middle(m), right(r){
+        node(const string &lv, const string &mv, const string &rv, node *l, node * m, node *r)
+        :lval(lv), mval(mv), rval(rv), left(l), middle(m), right(r){
             lines.resize(0); // Resizes vector to only allot necessary amount of space
         }
-        string key;
-        string rval;
         string lval;
         string mval;
+        string rval;
         node * left;
         node * middle;
         node * right;

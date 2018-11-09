@@ -78,66 +78,54 @@ void TTT::buildTree(ifstream & input){
 void TTT::insertHelper(const string &x, int line, node *& t, int &distWord){
     if(t == NULL)
     {
-	    t = new node(x, "","","", NULL, NULL, NULL);
+	    t = new node(x,"","", NULL, NULL, NULL);
 	    t->lines.push_back(line);
 	    distWord++;
     }
-    else 
-    {
-    if (x.compare(t->key) > 0 && t->left != NULL)
-        insertHelper(x, line, t->left, distWord);
-    
-    else if (x.compare(t->key) < 0 && t->right != NULL)
-        insertHelper(x, line, t->right, distWord);
-    
-	else if (x.compare(t->lval) > 0 && t->left == NULL){
-        if (t->lval != "" && t->rval != ""){
-            node * r = new node("","", x, "", NULL, NULL, NULL);
-            node * l = new node("", "",t->rval, "", NULL, NULL, NULL);
-            t->left = r->middle;
-            r->middle = t->left;
-            t->right = l->middle;
-            l->middle = t->right;
-            t->mval = t->rval;
-            t->lval = "";
-            t->rval = "";
-        }
-        else{
-        t->rval = t->key; // Move the root to the right
-        t->lval = x; // Insert new key to the left value
-        t->key = "";
-        }
-    }
-    	else if (x.compare(t->lval) < 0 && t->left == NULL){
-        if (t->lval != "" && t->rval != ""){
-            node * r =  new node("","", t->rval, "", NULL, t->left, NULL);
-            node * l =  new node("", "",x, "", NULL, t->right, NULL);
-            t->left = r->middle;
-            r->middle = t->left;
-            t->right = l->middle;
-            l->middle = t->right;
-            t->mval = t->lval;
-            t->lval = "";
-            t->rval = "";
-            // stop here
-        }
-        else{
-        t->rval = t->key; // Move the root to the right
-        t->lval = x; // Insert new key to the left value
-        t->key = "";
-        }
-    }
-    //insertHelper(x, line, t->right, distWord);
-	else if (x.compare(t->key) == 0)
-	    t->lines.push_back(line);
-	else if (x.compare(t->rval) < 0 && t->right == NULL){ // if (x < key) then < 0
-        t->lval = t->key; // Move the root to the right
-        t->rval = x; // Insert new key to the left value
-        t->key = "";
-    }
-    //insertHelper(x, line, t->left, distWord);
-			
-    }
+    else if (t->lval != "" && t->rval == "")
+      {
+				if (x < t->lval)
+	  		{
+	    		t->rval = t->lval;
+	    		t->lval = x;
+	  		}
+				else
+	  			t->rval = x;
+      }
+    	else if (t->lval != "" && t->rval != "")
+      	{						
+					 if (x > t->lval && x < t->rval)
+						{
+							node * m = new node(x, "", "", NULL, NULL, NULL);
+							t->middle = m;
+							m->lval = x;
+							t->lines.push_back(line);
+	    				distWord++;
+						}
+						else{
+					node * l = new node(x, "", "", NULL, NULL, NULL);
+					node * r = new node(t->lval, "", "", NULL, NULL, NULL);
+					t->lines.push_back(line);
+	    		distWord++;
+					t->left = l;
+					t->right = r;
+						if (x < t->lval)
+	  					{
+								l->lval = x;
+								r->lval = t->lval;
+								t->lval = t->rval;
+								t->rval = "";
+							}
+						else if (x > t->rval)
+						{
+							l->lval = t->lval;
+							r->lval = x;
+							t->lval = t->rval;
+							t->rval = "";
+						}
+						}
+
+				}
 }
 
 void TTT::printTreeHelper(node *t, ostream & out) const{
@@ -146,7 +134,7 @@ void TTT::printTreeHelper(node *t, ostream & out) const{
 	else {
 		printTreeHelper(t->left, out);
 		out << setw(30) << std::left;
-		out << t->key << " " << t->lines[0];
+		out << t->lval << " " << t->lines[0];
 		for (int i = 1; i < t->lines.size(); i++)
 			out << ", " << t->lines[i];
 		out << endl;

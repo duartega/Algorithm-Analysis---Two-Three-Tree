@@ -1,7 +1,1 @@
-Hello, this is a test
-of how exactly the getline
-function works. Is it
-working? It is difficult
-to predict how the
-function will work
-exactly. work.
+50 30 40 70 90 20
