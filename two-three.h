@@ -17,8 +17,8 @@ class TTT{
         void buildTree(ifstream & input);
     private:
     struct node{
-        node(const string &lv, const string &mv, const string &rv, node *l, node * m, node *r)
-        :lval(lv), mval(mv), rval(rv), left(l), middle(m), right(r){
+        node(const string &lv, const string &mv, const string &rv, node *l, node * m, node *r, node *p, const int h)
+        :lval(lv), mval(mv), rval(rv), left(l), middle(m), right(r), parent(p), height(h){
             lines.resize(0); // Resizes vector to only allot necessary amount of space
         }
         string lval;
@@ -27,6 +27,8 @@ class TTT{
         node * left;
         node * middle;
         node * right;
+        node * parent;
+        int height;
         vector<int> lines;
     };
     node * root;
