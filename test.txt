@@ -1,1 +1,7 @@
-50 60 70 40 30 20 10 80 90 100
+Hello, this is a test
+of how exactly the getline
+function works. Is it
+working? It is difficult
+to predict how the
+function will work
+exactly. work.

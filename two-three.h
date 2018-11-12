@@ -11,14 +11,14 @@ using namespace std;
 class TTT{
     public:
         TTT();
-        //void contains() const;
+        void contains() const;
         bool isEmpty();
-        void printTree(ostream & out = cout) const;
-        void buildTree(ifstream & input);
+        void printTreeTTT(ostream & out = cout) const;
+        void buildTreeTTT(ifstream & input);
     private:
     struct node{
-        node(const string &lv, const string &mv, const string &rv, node *l, node * m, node *r, node *p, const int h)
-        :lval(lv), mval(mv), rval(rv), left(l), middle(m), right(r), parent(p), height(h){
+        node(const string &lv, const string &mv, const string &rv, node *l, node * m, node *r, node *p)
+        :lval(lv), mval(mv), rval(rv), left(l), middle(m), right(r), parent(p){
             lines.resize(0); // Resizes vector to only allot necessary amount of space
         }
         string lval;
@@ -28,14 +28,17 @@ class TTT{
         node * middle;
         node * right;
         node * parent;
-        int height;
+
         vector<int> lines;
     };
     node * root;
     void insertHelper(const string &X, int line, node *& t, int &distWords);
-	//bool containsHelper(const string & x, node * t, node* &result) const;
+    void leftInsertHelper(node *& t, const string &X);
+    void splitInsertHelper(node *& t, const string &X);
+    char directionHelper(node *& t, node *& p);
+	bool containsHelper(const string & x, node * t, node* &result) const;
 	void printTreeHelper(node *t, ostream & out) const;
-	//int findHeight(node *t);
+	int findHeight(node *t);
 };
 
 #endif

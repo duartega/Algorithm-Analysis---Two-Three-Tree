@@ -1,0 +1,124 @@
+void TTT::insertHelper(const string &x, int line, node *&t, int &distWord)
+{
+	if (t == NULL)
+	{
+		t = new node(x, "", "", NULL, NULL, NULL, NULL);
+		t->lines.push_back(line);
+		distWord++;
+	}
+	else if (x.compare(t->lval) == 0)
+		t->lines.push_back(line);
+	else if (x.compare(t->rval) == 0)
+		t->lines.push_back(line);
+	else if (t->lval != "" && t->rval == "" && (t->left == NULL && t->right == NULL))
+	{
+			leftInsertHelper(t, x);
+			t->lines.push_back(line);
+			distWord++;
+		
+		
+	}
+	else if (x < t->lval && t->left != NULL) // Has left child
+		insertHelper(x, line, t->left, distWord);
+	else if (x > t->rval && t->right != NULL) // Has right child
+		insertHelper(x, line, t->right, distWord);
+	else if (t->lval != "" && t->rval != "") // T lval and rval are both taken
+	{
+		if (x > t->lval && x < t->rval) // Middle case
+		{
+			node *l = new node(t->lval, "", "", NULL, NULL, NULL, t);
+			node *r = new node(t->rval, "", "", NULL, NULL, NULL, t);
+
+			t->left = l;
+			t->right = r;
+			t->rval = "";
+			t->lval = x;
+			t->lines.push_back(line);
+			distWord++;
+		}
+
+		else if (x < t->lval && t->left == NULL) // Left case
+		{
+			if (t->parent->rval == "")
+			{
+				node *m = new node(x, "", "", NULL, NULL, NULL, t);
+				t->parent->rval = t->lval;
+				t->lval = t->rval;
+				t->parent->middle = m;
+				t->rval = "";
+				t->lines.push_back(line);
+				distWord++;
+			}
+			else if (t->parent->rval != "")
+			{
+				node *l = new node(x, "", "", NULL, NULL, NULL, t);
+				node *r = new node(t->rval, "", "", NULL, NULL, NULL, t);
+				node *l2 = new node(t->parent->middle->lval, "", "", NULL, NULL, NULL, t);
+				node *r2 = new node(t->parent->right->lval, "", "", NULL, NULL, NULL, t);
+				node *m = new node(t->parent->rval, "", "", NULL, NULL, NULL, t);
+
+				t->left = l;
+				t->right = r;
+				t->rval = "";
+				t->parent->right = m;
+				m->right = r2;
+				m->left = l2;
+				m->right->parent = m;
+				m->left->parent = m;
+				t->parent->rval = "";
+				free(t->parent->middle);
+				t->lines.push_back(line);
+				distWord++;
+			}
+		}
+		else if (x > t->rval && t->right == NULL) // Right case
+		{
+			if (t->right == NULL){
+				node *l = new node(t->lval, "", "", NULL, NULL, NULL, t);
+				node *r = new node(x, "", "", NULL, NULL, NULL, t);
+
+				t->left = l;
+				t->right = r;				
+				t->lval = t->rval;
+				t->rval = "";
+				t->lines.push_back(line);
+				distWord++;
+			}
+			else if (t->parent->rval == "")
+			{
+				node *m = new node(t->lval, "", "", NULL, NULL, NULL, t);
+				t->parent->rval = t->rval;
+				t->lval = x;
+				t->parent->middle = m;
+				t->rval = "";
+				t->lines.push_back(line);
+				distWord++;
+			}
+		
+		else if (t->parent->rval != "")
+		{
+			node *l = new node(t->lval, "", "", NULL, NULL, NULL, t);
+			node *r = new node(x, "", "", NULL, NULL, NULL, t);
+			node *m = new node(t->parent->rval, "", "", NULL, NULL, NULL, t);
+
+			node *l2 = new node(t->parent->middle->lval, "", "", NULL, NULL, NULL, t);
+			node *r2 = new node(t->parent->right->lval, "", "", NULL, NULL, NULL, t);
+
+			t->left = l;
+			t->right = r;
+			t->parent->right = m;
+			t->lval = t->rval;
+			t->rval = "";
+			//t->parent->right = m;
+			m->right = r2;
+			m->left = l2;
+			m->right->parent = m;
+			m->left->parent = m;
+			t->parent->rval = "";
+			free(t->parent->middle);
+			t->lines.push_back(line);
+			distWord++;
+		}
+		}
+	}
+}
