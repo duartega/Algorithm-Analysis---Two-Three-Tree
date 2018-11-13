@@ -18,21 +18,20 @@ class twoThreeNode {
 		twoThreeNode *insertVal(twoThreeNode *, word *);
 		twoThreeNode *add(twoThreeNode *);
 		word *find(twoThreeNode *, std::string );
+		int getHeight(twoThreeNode *);
 
 		/** Adders **/
-		void setLeftNode(twoThreeNode *node)   { leftNode = node;    }
-		void setRightNode(twoThreeNode *node)  { rightNode = node;   }
-		void setCenterNode(twoThreeNode *node) { centerNode = node;  }
-		void setHeight(int h)									 { height = h;         }	
+		void setLeftNode(twoThreeNode *node)		{ leftNode = node;    }
+		void setRightNode(twoThreeNode *node)		{ rightNode = node;   }
+		void setCenterNode(twoThreeNode *node)	{ centerNode = node;  }
 
 		/** Getters **/
-		bool isLeaf() 			 					{ return leftNode == nullptr; }
-		twoThreeNode *leftChild()     { return leftNode;     }
-		twoThreeNode *rightChild() 	  { return rightNode;    }
-		twoThreeNode *centerChild() 	{ return centerNode;   }
-		word  *getLeftVal()		 				{ return leftVal;      }
-		word  *getRightVal()		 			{ return rightVal;     }
-		int getHeight() 							{ return height;       }
+		bool isLeaf()									{ return leftNode == nullptr; }
+		twoThreeNode *leftChild()			{ return leftNode;     }
+		twoThreeNode *rightChild()		{ return rightNode;    }
+		twoThreeNode *centerChild()		{ return centerNode;   }
+		word  *getLeftVal()						{ return leftVal;      }
+		word  *getRightVal()					{ return rightVal;     }
 
 		/** Pre Order Traversal Printer **/
 		void printVals(twoThreeNode *);
@@ -42,6 +41,12 @@ class twoThreeNode {
 		word *leftVal, *rightVal;
 		int  height;
 };
+
+int twoThreeNode::getHeight(twoThreeNode *node) {
+   if(node == nullptr) 
+     return 0;
+   return 1 + getHeight(node->leftChild()) + getHeight(node->centerChild()) + getHeight(node->rightChild());
+}
 
 void twoThreeNode::printVals(twoThreeNode *node) {
   if(node == nullptr )
@@ -248,5 +253,6 @@ twoThreeNode *generateTree() {
 int main() { 
 	twoThreeNode *tree = generateTree();
  	tree->printVals(tree);
+  std::cout << tree->getHeight(tree) << std::endl;
  	return 0;
 }
