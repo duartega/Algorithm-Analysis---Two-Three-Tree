@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 					string sw;
 					cout << "Search word: ";
 					cin >> sw;
-					tree->find(tree, sw)
+					trees->find(trees, sw);
 				}
 			}
 			//Save index
