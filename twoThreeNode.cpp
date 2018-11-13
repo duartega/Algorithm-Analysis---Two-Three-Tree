@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <ctime>
 
 struct word {
   std::string value, lineOccurences;
@@ -18,6 +19,7 @@ class twoThreeNode {
     twoThreeNode *insertVal(twoThreeNode *, word *);
     twoThreeNode *add(twoThreeNode *);
     word *find(twoThreeNode *, std::string );
+    int getNumNodes(twoThreeNode *);
     int getHeight(twoThreeNode *);
 
     /** Adders **/
@@ -37,7 +39,7 @@ class twoThreeNode {
     friend bool operator == (const twoThreeNode &, const twoThreeNode &);
 
     /** Pre Order Traversal Printer **/
-    void printVals(twoThreeNode *);
+    void printVals(twoThreeNode *,std::ostream &);
 
   private:
     twoThreeNode *leftNode, *rightNode, *centerNode;
@@ -49,34 +51,40 @@ bool operator==(twoThreeNode &nOne, twoThreeNode &nTwo) {
   return ( nOne.getLeftVal() == nTwo.getLeftVal() && nOne.getRightVal() == nTwo.getRightVal());
 }
 
-int twoThreeNode::getHeight(twoThreeNode *node) {
+int twoThreeNode::getNumNodes(twoThreeNode *node) {
    if(node == nullptr) 
      return 0;
-   return 1 + getHeight(node->leftChild()) + getHeight(node->centerChild()) + getHeight(node->rightChild());
+   return 1 + getNumNodes(node->leftChild()) + getNumNodes(node->centerChild()) + getNumNodes(node->rightChild());
 }
 
-void twoThreeNode::printVals(twoThreeNode *node) {
+int twoThreeNode::getHeight(twoThreeNode *node) {
+   if(node == nullptr)
+	return 0;
+   return 1 + getHeight(node->leftChild());
+}
+
+void twoThreeNode::printVals(twoThreeNode *node, std::ostream &ostr) {
   if(node == nullptr )
     return ;
 
-  std::cout << "node values: ";
+  ostr << "node values: ";
   if(node->getLeftVal() != nullptr) {
     word *leftWord = node->getLeftVal();
-    std::cout << leftWord->value << " at lines: " << leftWord->lineOccurences ;
+    ostr << leftWord->value << " at lines: " << leftWord->lineOccurences ;
   }
 
   if(node->getRightVal() != nullptr) {
-     word *rightWord = node->getRightVal();
-    std::cout << " " << rightWord->value << " at lines: " << rightWord->lineOccurences;
+    word *rightWord = node->getRightVal();
+    ostr << " " << rightWord->value << " at lines: " << rightWord->lineOccurences;
   }
 
-  std::cout << "\nleft values: ";
-  printVals(node->leftChild());
-  std::cout << "center values: ";
-  printVals(node->centerChild());
-  std::cout << "right values:";
-  printVals(node->rightChild());
-  std::cout << "\n \n";
+  ostr << "\nleft values: ";
+  printVals(node->leftChild(), ostr);
+  ostr << "center values: ";
+  printVals(node->centerChild(),ostr);
+  ostr << "right values:";
+  printVals(node->rightChild(),ostr);
+  ostr << "\n \n";
 }
 
 twoThreeNode *twoThreeNode::insertVal(twoThreeNode *node, word *val) {
@@ -118,63 +126,61 @@ twoThreeNode *twoThreeNode::insertVal(twoThreeNode *node, word *val) {
 }
 
 twoThreeNode *twoThreeNode::add(twoThreeNode *node) {
-   if(getLeftVal() == nullptr ) //empty tree
-  return node;
+  if(getLeftVal() == nullptr ) //empty tree
+    return node;
 
-   else if(rightVal == nullptr ) {  //only left is present, add right value
-  if((node->getLeftVal())->value < (getLeftVal())->value) {
-    rightVal = getLeftVal();
-    rightNode = centerNode;
-    leftVal  = node->getLeftVal();
-    leftNode = node->leftChild();
-    centerNode = node->centerChild();
-  }
-
-   else {
-     rightVal = node->getLeftVal();
-     centerNode = node->leftChild();
-     rightNode = node->centerChild();
-  }
-
-        return this;
+  else if(rightVal == nullptr ) {  //only left is present, add right value
+    if((node->getLeftVal())->value < (getLeftVal())->value) {
+      rightVal = getLeftVal();
+      rightNode = centerNode;
+      leftVal  = node->getLeftVal();
+      leftNode = node->leftChild();
+      centerNode = node->centerChild();
     }
 
-    else if((node->getLeftVal())->value < (getLeftVal())->value) { //add as a left child
-  twoThreeNode *newNode = new twoThreeNode(getLeftVal());
-  newNode->setLeftNode(node);
-  newNode->setCenterNode(this);
-  leftNode = centerNode;
-  centerNode = rightNode;
-  rightNode = nullptr;
-
-  leftVal = rightVal;
-  rightVal = nullptr;
-  return newNode;
+    else { 
+      rightVal = node->getLeftVal();
+      centerNode = node->leftChild();
+      rightNode = node->centerChild();
     }
+    return this;
+  }
 
-    else if((node->getLeftVal())->value < (getRightVal())->value) { //add as a center child
-  twoThreeNode *newNode = new twoThreeNode(getRightVal());
-  newNode->setLeftNode(node->centerChild());
-  newNode->setCenterNode(rightNode);
-  node->setCenterNode(newNode);
-  node->setLeftNode(this);
-  rightVal = nullptr;
-  rightNode = nullptr;
-  return node;
+  else if((node->getLeftVal())->value < (getLeftVal())->value) { //add as a left child
+    twoThreeNode *newNode = new twoThreeNode(getLeftVal());
+    newNode->setLeftNode(node);
+    newNode->setCenterNode(this);
+    leftNode = centerNode;
+    centerNode = rightNode;
+    rightNode = nullptr;
+
+    leftVal = rightVal;
+    rightVal = nullptr;
+    return newNode;
+  }
+
+  else if((node->getLeftVal())->value < (getRightVal())->value) { //add as a center child
+    twoThreeNode *newNode = new twoThreeNode(getRightVal());
+    newNode->setLeftNode(node->centerChild());
+    newNode->setCenterNode(rightNode);
+    node->setCenterNode(newNode);
+    node->setLeftNode(this);
+    rightVal = nullptr;
+    rightNode = nullptr;
+    return node;
   
-    }
+  }
     
-    else { //add as a right child
-      twoThreeNode *newNode = new twoThreeNode(getRightVal());
-  newNode->setLeftNode(this);
-  newNode->setCenterNode(node);
-  node->setLeftNode(rightNode);
-  rightVal = nullptr;
-  rightNode = nullptr;
-  return newNode;
-    }
-
-    return nullptr; //no no no hunny 
+  else { //add as a right child
+    twoThreeNode *newNode = new twoThreeNode(getRightVal());
+    newNode->setLeftNode(this);
+    newNode->setCenterNode(node);
+    node->setLeftNode(rightNode);
+    rightVal = nullptr;
+    rightNode = nullptr;
+    return newNode;
+  }
+  return nullptr; //no no no hunny 
 }
 
 word *twoThreeNode::find(twoThreeNode *node, std::string val) {
@@ -219,33 +225,94 @@ twoThreeNode *generateTree() {
   std::string line = "";
   int lineNum = 1;
 
-  while(std::getline(file,line)) {
-    std::string tempWord = "";
-    for(int i = 0; i < line.length(); i++) {
-      while(line[i] != ' ' && line[i] != '\n' && i < line.length()) {
-        tempWord.insert(tempWord.end(), line[i]);
-        i++;
-      }
-    }
 
-    word *exist = tree->find(tree,tempWord);
-    if(exist != nullptr) 
-      exist->lineOccurences = exist->lineOccurences + " " + std::to_string(lineNum);
+ std::clock_t start;
+ start = std::clock();
+ while (!file.eof())
+	{
+		std::string tempWord, line;
+		getline(file, line);
 
-    else {
-       word *val = new word();
-      val->value = tempWord;
-      val->lineOccurences = val->lineOccurences + " " + std::to_string(lineNum);
-      tree = tree->insertVal(tree, val);
-    }
-      lineNum ++;
-  } 
-  return tree;
+		for (int i = 0; i < line.length(); i++)
+		{
+			while (line[i] != ' ' && line[i] != '\n' && line[i] != '\r' && i < line.length())
+			{
+				tempWord.insert(tempWord.end(), line[i]);
+				i++;
+			}
+
+			//Trim any punctuation off end of word. Will leave things like apostrophes
+			//and decimal points
+			while (tempWord.length() > 0 && !isalnum(tempWord[tempWord.length() - 1]))
+				tempWord.resize(tempWord.size() - 1);
+
+			word *exist = tree->find(tree, tempWord);
+			if (exist != nullptr)
+				exist->lineOccurences = exist->lineOccurences + " " + std::to_string(lineNum);
+
+			else
+			{
+				word *val = new word();
+				val->value = tempWord;
+				val->lineOccurences = val->lineOccurences + " " + std::to_string(lineNum);
+				tree = tree->insertVal(tree, val);
+			}
+			tempWord = "";
+			lineNum++;
+		}
+	}
+  std::cout << (std::clock() - start) / double(CLOCKS_PER_SEC / 1000) << std::endl;
+ return tree;
 }
 
 int main() { 
   twoThreeNode *tree = generateTree();
-   tree->printVals(tree);
-  std::cout << tree->getHeight(tree) << std::endl;
-   return 0;
+  //tree->printVals(tree);
+
+  while (1) {
+    char t = '0';
+    short option = 0;
+    std::cout << "Options: (a) BST, (b) 2-3 Tree, (c) Compare BST and 2-3 Tree\n";
+    std::cin >> t;
+    std::cout << "Options: (1) display index, (2) search, (3) save index, (4) quit\n";
+    std::cin >> option;
+
+     if (t == 'b' && option == 1) { 
+	tree->printVals(tree, std::cout);
+  	std::cout << tree->getHeight(tree) << std::endl;
+  	std::cout << tree->getNumNodes(tree) << std::endl;
+     }
+
+     //Search index for a word
+      if (option == 2) {
+	if (t == 'b') {
+		std::string sw;
+		std::cout << "Search word: ";
+		std::cin >> sw;
+		if(tree->find(tree, sw) == nullptr) {
+			std::cout << "value does not exist\n";
+		}
+		else {
+			std::cout << "value does exist fam\n";
+		}
+	}
+      }
+     //Save index
+    else if (option == 3) {
+	std::string outputFile;
+	std::cout << "Enter a filename to save your index to (Suggested: <filename>.txt) : ";
+	std::cin >> outputFile;
+	std::ofstream output;	
+	output.open(outputFile);
+	if (t == 'b')
+		tree->printVals(tree, output);
+	output.close();
+	std::cout << "Saved\n";
+    }
+
+    //Quit
+    else if (option == 4)
+	break;
+   }
+  return 0;
 }
